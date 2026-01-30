@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Produtos - Padaria Cachoeiro</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <header class="main-header">
+        <div class="logo-area">
+            <img src="/img/logo-padaria.png" alt="Logo" class="logo-topo">
+            <span class="titulo-padaria">Padaria Cachoeiro</span>
+        </div>
+        <a th:href="@{/}" class="btn btn-danger">Sair</a>
+    </header>
+
+    <div class="app-container">
+        <nav class="sidebar">
+            <ul class="nav-links">
+                <li><a th:href="@{/dashboard}">🏠 Início</a></li>
+                <li><a th:href="@{/produtos}" style="font-weight: bold;">🍞 Produtos</a></li>
+                <li><a th:href="@{/anotados}">💰 Anotados</a></li>
+                <li><a th:href="@{/usuarios}">⚙️ Usuários</a></li>
+                <li><a th:href="@{/clientes}">👥 Clientes</a></li>
+                <li><a th:href="@{/vendas}">🛒 Vender</a></li>
+            </ul>
+        </nav>
+
+        <main class="main-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="font-size: 1.8rem;">Produtos</h2>
+                <button class="btn btn-primary" onclick="openModal('modalNovoProduto')">+ Novo Produto</button>
+            </div>
+            
+            <div class="dashboard-view">
+                <div class="cards-stack">
+                    <div class="dash-card">
+                        <h3>🔍 Localizar Item</h3>
+                        <form th:action="@{/produtos/buscar}" method="get">
+                            <input type="text" name="nome" class="input-web" placeholder="Nome do produto...">
+                            <button type="submit" class="btn" style="width: 100%; margin-top: 10px;">Pesquisar</button>
+                        </form>
+                    </div>
+                </div>
+
+                <section class="table-section">
+                    <div class="table-container" style="margin-top: 0;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Cód</th>
+                                    <th>Descrição</th>
+                                    <th>Preço (un)</th>
+                                    <th>Estoque</th>
+                                    <th style="text-align: center;">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="produto : ${produtos}">
+                                    <td th:text="${produto.id}">101</td>
+                                    <td th:text="${produto.nome}">Nome</td>
+                                    <td th:text="${'R$ ' + #numbers.formatDecimal(produto.preco, 1, 2, 'COMMA')}">R$ 0,00</td>
+                                    <td th:text="${produto.estoque}">0</td>
+                                    <td style="text-align: center;">
+                                    <button class="btn-icon" type="button" title="Editar"
+                                     th:data-id="${produto.id}"
+                                     th:data-nome="${produto.nome}"
+                                     th:data-preco="${produto.preco}"
+                                     th:data-estoque="${produto.estoque}"
+                                     onclick="preencherEdicaoProduto(this)">   
+                                      ✏️
+                                    </button>
+                                        <a th:href="@{/produtos/excluir/{id}(id=${produto.id})}" 
+                                           class="btn-icon" title="Excluir" 
+                                           onclick="return confirm('Excluir este produto?')">🗑️</a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+<div id="modalNovoProduto" class="modal">
+    <div class="modal-content">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="font-size: 1.6rem;">🍞 Novo Produto</h3>
+            <button onclick="closeModal('modalNovoProduto')" style="background:none; border:none; font-size: 1.5rem; cursor:pointer;">&times;</button>
+        </div>
+        <hr style="margin: 15px 0; border-top: 1px solid #ddd;">
+
+        <form th:action="@{/produtos/salvar}" method="post">
+            <label style="font-weight: bold; display: block; margin-bottom: 5px;">Nome do Produto:</label>
+            <input type="text" name="nome" class="input-web" placeholder="Ex: Pão de Queijo" required>
+            
+            <input type="hidden" name="descricao" value="Novo Produto">
+
+            <div style="display: flex; gap: 15px; margin-top: 15px;">
+                <div style="flex: 1;">
+                    <label style="font-weight: bold; display: block; margin-bottom: 5px;">Preço (un):</label>
+                    <input type="number" step="0.01" name="preco" class="input-web" placeholder="0.00" required>
+                </div>
+                <div style="flex: 1;">
+                    <label style="font-weight: bold; display: block; margin-bottom: 5px;">Estoque Inicial:</label>
+                    <input type="number" name="estoque" class="input-web" value="0" required>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-top: 30px;">
+                <button type="submit" class="btn btn-success" style="flex: 2; height: 45px;">SALVAR PRODUTO</button>
+                <button type="button" class="btn" onclick="closeModal('modalNovoProduto')" style="flex: 1; height: 45px;">CANCELAR</button>
+            </div>
+        </form>
+    </div>
+</div>
+<div id="modalEditarProduto" class="modal">
+    <div class="modal-content">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="font-size: 1.6rem;">🍞 Editar Produto</h3>
+            <button onclick="closeModal('modalEditarProduto')" style="background:none; border:none; font-size: 1.5rem; cursor:pointer;">&times;</button>
+        </div>
+        <hr style="margin: 15px 0; border-top: 1px solid #ddd;">
+
+        <form th:action="@{/produtos/salvar}" method="post">
+            <input type="hidden" name="id" id="editIdProd">
+            <input type="hidden" name="descricao" id="editDescProd">
+            
+            <label style="font-weight: bold; display: block; margin-bottom: 5px;">Nome do Produto:</label>
+            <input type="text" name="nome" id="editNomeProd" class="input-web" required>
+            
+            <div style="display: flex; gap: 15px; margin-top: 15px;">
+                <div style="flex: 1;">
+                    <label style="font-weight: bold; display: block; margin-bottom: 5px;">Preço (R$):</label>
+                    <input type="number" step="0.01" name="preco" id="editPrecoProd" class="input-web" required>
+                </div>
+                <div style="flex: 1;">
+                    <label style="font-weight: bold; display: block; margin-bottom: 5px;">Estoque:</label>
+                    <input type="number" name="estoque" id="editEstoqueProd" class="input-web" required>
+                </div>
+            </div>
+            
+            <div style="display: flex; gap: 10px; margin-top: 30px;">
+                <button type="submit" class="btn btn-success" style="flex: 2; height: 45px;">SALVAR ALTERAÇÕES</button>
+                <button type="button" class="btn" onclick="closeModal('modalEditarProduto')" style="flex: 1; height: 45px;">CANCELAR</button>
+            </div>
+        </form>
+    </div>
+</div>
+    <script src="/js/main.js"></script>
+</body>
+</html>

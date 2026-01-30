@@ -1,0 +1,232 @@
+:root {
+    --fundo-cinza: #D3D3D3;      /* Cor de fundo */
+    --card-cinza: #C0C0C0;       /* Cor dos cards e seções */
+    --borda-padrao: #999999;
+    --texto-preto: #000000;
+    --branco: #FFFFFF;
+    --ciano-botao: #4FBCC4;
+    --verde-sucesso: #27ae60;
+    --vermelho-erro: #E57373;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Times New Roman', Times, serif;
+    background-color: var(--fundo-cinza);
+    color: var(--texto-preto);
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 40px;
+    background-color: var(--fundo-cinza);
+    border-bottom: 1px solid var(--borda-padrao);
+    height: 80px;
+    width: 100%;
+}
+
+.logo-area {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.logo-topo {
+    height: 60px;
+    width: auto;
+}
+
+.titulo-padaria {
+    font-size: 2.2rem;
+    font-weight: normal;
+}
+
+.app-container {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+/* Sidebar Lateral */
+.sidebar {
+    width: 230px;
+    background-color: var(--fundo-cinza);
+    border-right: 1px solid var(--borda-padrao);
+    padding: 20px;
+}
+
+.nav-links {
+    list-style: none;
+}
+
+.nav-links li {
+    margin-bottom: 20px;
+}
+
+.nav-links li a {
+    text-decoration: none;
+    color: var(--texto-preto);
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.nav-links li a:hover {
+    font-weight: bold;
+}
+
+/* Área de Conteúdo Central */
+.main-content {
+    flex: 1;
+    padding: 30px;
+    overflow-y: auto;
+}
+
+.welcome-msg {
+    text-align: center;
+    font-size: 1.8rem;
+    margin-bottom: 30px;
+}
+
+.dashboard-view {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 30px;
+}
+
+/* Pilha de Cards à Esquerda */
+.cards-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.dash-card {
+    background-color: var(--card-cinza);
+    padding: 20px;
+    min-height: 140px;
+    border: 1px solid #888;
+    border-radius: 4px;
+}
+
+.dash-card h3 {
+    font-size: 1.3rem;
+    font-weight: normal;
+    margin-bottom: 10px;
+}
+
+/* Seção da Tabela à Direita */
+.table-section {
+    background-color: var(--card-cinza);
+    padding: 20px;
+    border: 1px solid var(--borda-padrao);
+    border-radius: 4px;
+}
+
+.table-container {
+    background-color: var(--branco);
+    margin-top: 15px;
+    border: 1px solid var(--borda-padrao);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    text-align: left;
+    background-color: #f2f2f2;
+    padding: 12px;
+    border-bottom: 2px solid var(--borda-padrao);
+}
+
+td {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+}
+
+/* Botões e Ícones */
+.btn {
+    padding: 8px 20px;
+    border: 1px solid var(--borda-padrao);
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-primary { background-color: var(--ciano-botao); color: var(--branco); border: none; }
+.btn-danger { background-color: var(--branco); color: var(--texto-preto); }
+.btn-success { background-color: var(--verde-sucesso); color: var(--branco); border: none; }
+
+.btn-icon {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.3rem;
+    margin: 0 5px;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0; top: 0; width: 100%; height: 100%;
+    background-color: rgba(0,0,0,0.6);
+}
+
+.modal-content {
+    background-color: var(--branco);
+    margin: 10% auto;
+    padding: 30px;
+    width: 450px;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+}
+
+.input-web {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* Cores para os Status nos Anotados */
+td:contains("PAGO") {
+    color: #27ae60;
+    font-weight: bold;
+}
+
+td:contains("PENDENTE") {
+    color: #e67e22;
+    font-weight: bold;
+}
+
+/* Efeito ao passar o mouse nas linhas da tabela */
+tbody tr:hover {
+    background-color: #f1f2f6;
+    transition: 0.3s;
+}
+
+/* Deixar o total do Dashboard com destaque */
+.dash-card p {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    letter-spacing: 1px;
+}

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Usuários - Padaria Cachoeiro</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <header class="main-header">
+        <div class="logo-area">
+            <img th:src="@{/img/logo-padaria.png}" alt="Logo" class="logo-topo">
+            <span class="titulo-padaria">Padaria Cachoeiro</span>
+        </div>
+        <a th:href="@{/}" class="btn btn-danger">Sair</a>
+    </header>
+
+    <div class="app-container">
+        <nav class="sidebar">
+            <ul class="nav-links">
+                <li><a th:href="@{/dashboard}">🏠 Início</a></li>
+                <li><a th:href="@{/produtos}">🍞 Produtos</a></li>
+                <li><a th:href="@{/anotados}">💰 Anotados</a></li>
+                <li><a th:href="@{/usuarios}" style="font-weight: bold;">⚙️ Usuários</a></li>
+                <li><a th:href="@{/clientes}">👥 Clientes</a></li>
+                <li><a th:href="@{/vendas}">🛒 Vender</a></li>
+            </ul>
+        </nav>
+
+        <main class="main-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="font-size: 1.8rem;">Gerenciar Usuários</h2>
+                <button class="btn btn-primary" onclick="openModal('modalNovoUsuario')">+ Novo Usuário</button>
+            </div>
+            
+            <div class="dashboard-view">
+                <div class="cards-stack">
+                    <div class="dash-card">
+                        <h3>🔍 Localizar Usuário</h3>
+                        <form th:action="@{/usuarios/buscar}" method="get" style="position: relative; margin-top: 10px;">
+                            <input type="text" name="termo" class="input-web" placeholder="Nome ou Login..." style="padding-left: 35px; width: 100%;">
+                            <span style="position: absolute; left: 10px; top: 12px;">🔍</span>
+                            <button type="submit" class="btn" style="width: 100%; margin-top: 10px;">Pesquisar</button>
+                        </form>
+                    </div>
+                </div>
+
+                    <section class="table-section">
+                        <div class="table-container" style="margin-top: 0;">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Login</th>
+                                        <th>Nome</th>
+                                        <th>Nível</th>
+                                        <th style="text-align: center;">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="u : ${usuarios}">
+                                        <td th:text="${u.login}">admin</td>
+                                        <td th:text="${u.nome}">Nome</td>
+                                        <td th:text="${u.nivel}">Nível</td>
+                                        <td style="text-align: center;">
+                                            <a th:href="@{/usuarios/excluir/{id}(id=${u.id})}" 
+                                               class="btn-icon" 
+                                               title="Excluir" 
+                                               onclick="return confirm('Deseja realmente excluir este usuário?')">
+                                               🗑️
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                                </table>
+                        </div>
+                    </section>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <div id="modalNovoUsuario" class="modal">
+        <div class="modal-content">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="font-size: 1.6rem;">👤 Novo Usuário</h3>
+                <button onclick="closeModal('modalNovoUsuario')" style="background:none; border:none; font-size: 1.5rem; cursor:pointer;">&times;</button>
+            </div>
+            <hr style="margin: 15px 0; border-top: 1px solid #ddd;">
+
+            <form th:action="@{/usuarios/salvar}" method="POST">
+                <label style="font-weight: bold; display: block; margin-bottom: 5px;">Nome:</label>
+                <input type="text" name="nome" class="input-web" placeholder="Ex: João Silva" required>
+
+                <label style="font-weight: bold; display: block; margin-bottom: 5px; margin-top: 15px;">Login:</label>
+                <input type="text" name="login" class="input-web" placeholder="Ex: joao.caixa" required>
+
+                <div style="display: flex; gap: 15px; margin-top: 15px;">
+                    <div style="flex: 1;">
+                        <label style="font-weight: bold; display: block; margin-bottom: 5px;">Senha:</label>
+                        <input type="password" name="senha" class="input-web" required>
+                    </div>
+                    <div style="flex: 1;">
+                        <label style="font-weight: bold; display: block; margin-bottom: 5px;">Nível:</label>
+                        <select name="nivel" class="input-web">
+                            <option value="Funcionário">Funcionário</option>
+                            <option value="Administrador">Administrador</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-top: 30px;">
+                    <button type="submit" class="btn btn-success" style="flex: 2; height: 45px;">CRIAR CONTA</button>
+                    <button type="button" class="btn" onclick="closeModal('modalNovoUsuario')" style="flex: 1; height: 45px;">CANCELAR</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script th:src="@{/js/main.js}"></script>
+</body>
+</html>

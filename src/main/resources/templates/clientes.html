@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clientes - Padaria Cachoeiro</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <header class="main-header">
+        <div class="logo-area">
+            <img src="/img/logo-padaria.png" alt="Logo" class="logo-topo">
+            <span class="titulo-padaria">Padaria Cachoeiro</span>
+        </div>
+        <a th:href="@{/}" class="btn btn-danger">Sair</a>
+    </header>
+
+    <div class="app-container">
+        <nav class="sidebar">
+            <ul class="nav-links">
+                <li><a th:href="@{/dashboard}">🏠 Início</a></li>
+                <li><a th:href="@{/produtos}">🍞 Produtos</a></li>
+                <li><a th:href="@{/anotados}">💰 Anotados</a></li>
+                <li><a th:href="@{/usuarios}">⚙️ Usuários</a></li>
+                <li><a th:href="@{/clientes}" style="font-weight: bold;">👥 Clientes</a></li>
+                <li><a th:href="@{/vendas}">🛒 Vender</a></li>
+            </ul>
+        </nav>
+
+        <main class="main-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2>Cadastro de Clientes</h2>
+                <button class="btn btn-primary" onclick="openModal('modalCliente')">+ Novo Cliente</button>
+            </div>
+            
+            <div class="dashboard-view">
+                <div class="cards-stack">
+                    <div class="dash-card">
+                        <h3>🔍 Localizar Cliente</h3>
+                        <form th:action="@{/clientes/buscar}" method="get" style="position: relative; margin-top: 10px;">
+                           <input type="text" name="nome" class="input-web" placeholder="Pesquisar Nome ou CPF..." style="padding-left: 35px;">
+                            <span style="position: absolute; left: 10px; top: 12px;">🔍</span>
+                            <button type="submit" class="btn" style="width: 100%; margin-top: 10px;">Pesquisar</button>
+                        </form>
+                    </div>
+
+                    <div class="dash-card">
+                        <h3>Total Cadastrados:</h3>
+                        <p style="font-size: 2rem; margin-top: 5px;" th:text="${totalClientes}">0</p>
+                    </div>
+                </div>
+
+                <section class="table-section">
+                    <div class="table-container" style="margin-top: 0;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nome</th>
+                                    <th>CPF</th>
+                                    <th>Telefone</th>
+                                    <th style="text-align: center;">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="cliente : ${clientes}">
+                                    <td th:text="${cliente.id}">000</td>
+                                    <td th:text="${cliente.nome}">Nome do Cliente</td>
+                                    <td th:text="${cliente.cpf}">000.000.000-00</td>
+                                    <td th:text="${cliente.telefone}">(00) 00000-0000</td>
+                                    <td style="text-align: center;">
+                                    <button class="btn-icon" type="button" title="Editar"
+                                        th:data-id="${cliente.id}"
+                                        th:data-nome="${cliente.nome}"
+                                        th:data-cpf="${cliente.cpf}"
+                                        th:data-telefone="${cliente.telefone}"
+                                        onclick="preencherEdicao(this)">
+                                        ✏️
+                                    </button>
+                                        
+                                        <a th:href="@{/clientes/excluir/{id}(id=${cliente.id})}" 
+                                           class="btn-icon" title="Excluir" 
+                                           onclick="return confirm('Tem certeza que deseja excluir este cliente?')">🗑️</a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <div id="modalCliente" class="modal">
+        <div class="modal-content">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="font-size: 1.6rem;">👤 Novo Cliente</h3>
+                <button onclick="closeModal('modalCliente')" style="background:none; border:none; font-size: 1.5rem; cursor:pointer;">&times;</button>
+            </div>
+            <hr style="margin: 15px 0; border: 0; border-top: 1px solid #ddd;">
+
+            <form th:action="@{/clientes/salvar}" method="post">
+                <input type="hidden" id="hiddenIdInput" name="id" />
+
+                <label style="font-weight: bold; display: block; margin-bottom: 5px;">Nome Completo:</label>
+                <input type="text" name="nome" class="input-web" placeholder="Ex: Lucas Silva" required>
+
+                <div style="display: flex; gap: 15px; margin-top: 15px;">
+                    <div style="flex: 1;">
+                        <label style="font-weight: bold; display: block; margin-bottom: 5px;">CPF:</label>
+                        <input type="text" name="cpf" class="input-web" placeholder="000.000.000-00" required>
+                    </div>
+                    <div style="flex: 1;">
+                        <label style="font-weight: bold; display: block; margin-bottom: 5px;">Telefone:</label>
+                        <input type="text" name="telefone" class="input-web" placeholder="(28) 00000-0000" required>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-top: 30px;">
+                    <button type="submit" class="btn btn-success" style="flex: 2; height: 45px;">SALVAR CADASTRO</button>
+                    <button type="button" class="btn" onclick="closeModal('modalCliente')" style="flex: 1; height: 45px;">CANCELAR</button>
+                </div>
+            </form>
+        </div>
+    </div>
+<div id="modalEditarCliente" class="modal">
+    <div class="modal-content">
+        <h3>✏️ Editar Cliente</h3>
+        <form th:action="@{/clientes/salvar}" method="post">
+            <input type="hidden" name="id" id="editId">
+            <label>Nome:</label>
+            <input type="text" name="nome" id="editNome" class="input-web" required>
+            <div style="display: flex; gap: 15px; margin-top: 15px;">
+                <div style="flex: 1;">
+                    <label>CPF:</label>
+                    <input type="text" name="cpf" id="editCpf" class="input-web" required>
+                </div>
+                <div style="flex: 1;">
+                    <label>Telefone:</label>
+                    <input type="text" name="telefone" id="editTel" class="input-web" required>
+                </div>
+            </div>
+            <div style="display: flex; gap: 10px; margin-top: 30px;">
+                <button type="submit" class="btn btn-success">SALVAR</button>
+                <button type="button" class="btn" onclick="closeModal('modalEditarCliente')">CANCELAR</button>
+            </div>
+        </form>
+    </div>
+</div>
+    <script src="/js/main.js"></script>
+</body>
+</html>

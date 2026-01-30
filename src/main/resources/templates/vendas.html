@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Caixa - Padaria Cachoeiro</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <header class="main-header">
+        <div class="logo-area">
+            <img src="/img/logo-padaria.png" alt="Logo" class="logo-topo">
+            <span class="titulo-padaria">Padaria Cachoeiro</span>
+        </div>
+        <a th:href="@{/}" class="btn btn-danger">Sair</a>
+    </header>
+
+    <div class="app-container">
+        <nav class="sidebar">
+            <ul class="nav-links">
+                <li><a th:href="@{/dashboard}">🏠 Início</a></li>
+                <li><a th:href="@{/produtos}">🍞 Produtos</a></li>
+                <li><a th:href="@{/anotados}">💰 Anotados</a></li>
+                <li><a th:href="@{/usuarios}">⚙️ Usuários</a></li>
+                <li><a th:href="@{/clientes}">👥 Clientes</a></li>
+                <li><a th:href="@{/vendas}" style="font-weight: bold;">🛒 Vender</a></li>
+            </ul>
+        </nav>
+
+        <main class="main-content">
+            <h2 class="welcome-msg">Caixa Aberto - Atendimento</h2>
+            
+            <div class="dashboard-view">
+                <div class="cards-stack">
+                    <div class="dash-card">
+                        <h3>➕ Adicionar Item</h3>
+                        <form id="formAdicionarItem" onsubmit="event.preventDefault(); adicionarAoCarrinho();">
+                            <label>Produto (Nome ou Cód):</label>
+                            <input type="text" id="inputProduto" class="input-web" placeholder="F1 para buscar" list="listaProdutos">
+                            <datalist id="listaProdutos">
+                                <option th:each="p : ${produtos}" th:value="${p.nome}" th:data-preco="${p.preco}"></option>
+                            </datalist>
+                            
+                            <label style="margin-top: 10px; display: block;">Quantidade:</label>
+                            <input type="number" id="inputQtd" class="input-web" value="1" min="1">
+                            
+                            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;">Lançar Item (Enter)</button>
+                        </form>
+                    </div>
+                </div>
+
+                <section class="table-section" style="display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                        <h3>Carrinho</h3>
+                        <div class="table-container" style="margin-top: 10px; height: 300px; overflow-y: auto;">
+                            <table id="tabelaCarrinho">
+                                <thead>
+                                    <tr>
+                                        <th>Item</th>
+                                        <th>Qtd</th>
+                                        <th>V.Unitário</th>
+                                        <th>Total</th>
+                                        <th style="text-align: center;">Excluir</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div style="background: white; padding: 20px; border-radius: 4px; border: 1px solid #999; margin-top: 20px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 1.5rem;">VALOR TOTAL:</span>
+                            <span id="valorTotalVenda" style="font-size: 2.5rem; font-weight: bold; color: #27ae60;">R$ 0,00</span>
+                        </div>
+                        <button class="btn btn-success" onclick="openModal('modalPagamento')" style="width: 100%; font-size: 1.2rem; margin-top: 15px; height: 50px;">
+                            FINALIZAR VENDA (F2)
+                        </button>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+<div id="modalPagamento" class="modal">
+        <div class="modal-content">
+            <h3>Fechar Venda</h3>
+            <hr><br>
+            <p style="font-size: 1.2rem; margin-bottom: 10px;">Total a Pagar: <strong id="totalModal">R$ 0,00</strong></p>
+            
+            <form th:action="@{/api/vendas/finalizar}" method="POST" id="formFinalizar">
+                <input type="hidden" id="inputTotalVendaHidden" name="totalVendaReal">
+
+                <label>Forma de Pagamento:</label>
+                <select id="selectPagamento" name="formaPagamento" class="input-web" style="font-size: 1.1rem; height: 45px;" onchange="verificarFormaPagamento(this.value)">
+                    <option value="DINHEIRO">Dinheiro</option>
+                    <option value="PIX">Pix</option>
+                    <option value="CARTAO_CREDITO">Cartão de Crédito</option>
+                    <option value="CARTAO_DEBITO">Cartão de Débito</option>
+                    <option value="ANOTADO">Anotar (Fiado)</option>
+                </select>
+
+                <div id="seletorClienteAnotado" style="display: none; margin-top: 15px; border: 2px solid #c0392b; padding: 10px; border-radius: 4px; background-color: #fff5f5;">
+                    <label style="color: #c0392b; font-weight: bold;">👤 Para qual cliente deseja anotar?</label>
+                    <select name="clienteId" class="input-web">
+                        <option value="">-- Selecione o Cliente --</option>
+                        <option th:each="c : ${clientes}" th:value="${c.id}" th:text="${c.nome}"></option>
+                    </select>
+                </div>
+
+                <label style="margin-top: 15px; display: block;">Valor Recebido / Valor da Dívida:</label>
+                <input type="number" step="0.01" name="valorRecebido" class="input-web" placeholder="R$ 0,00" style="font-size: 1.2rem; height: 45px;">
+
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button type="submit" class="btn btn-success" style="flex: 1; height: 50px;">CONFIRMAR</button>
+                    <button type="button" class="btn" onclick="closeModal('modalPagamento')" style="flex: 1; height: 50px;">CANCELAR</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script src="/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Padaria Cachoeiro - Dashboard</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="logo-area">
+            <img src="/img/logo-padaria.png" alt="Logo" class="logo-topo">
+            <span class="titulo-padaria">Padaria Cachoeiro</span>
+        </div>
+        <a th:href="@{/}" class="btn btn-danger">Sair</a>
+    </header>
+
+    <div class="app-container">
+        <nav class="sidebar">
+            <ul class="nav-links">
+                <li><a th:href="@{/dashboard}" style="font-weight: bold;">🏠 Início</a></li>
+                <li><a th:href="@{/produtos}">🍞 Produtos</a></li>
+                <li><a th:href="@{/anotados}">💰 Anotados</a></li>
+                <li><a th:href="@{/usuarios}">⚙️ Usuários</a></li>
+                <li><a th:href="@{/clientes}">👥 Clientes</a></li>
+                <li><a th:href="@{/vendas}">🛒 Vender</a></li>
+            </ul>
+        </nav>
+
+        <main class="main-content">
+            <h2 class="welcome-msg">Bem vindo(a) a Padaria Cachoeiro!</h2>
+            
+            <div class="dashboard-view">
+                <div class="cards-stack">
+                    <div class="dash-card">
+                        <h3>Vendas Hoje:</h3>
+                        <p style="font-size: 1.8rem;" th:text="${'R$ ' + #numbers.formatDecimal(totalVendas, 1, 2, 'COMMA')}">R$ 0,00</p>
+                    </div>
+                    
+                    <div class="dash-card">
+                        <h3>Em Falta:</h3>
+                        <p style="font-size: 1.2rem; color: #444;" th:text="${produtosFalta + ' produtos'}">0 produtos</p>
+                    </div>
+                </div>
+
+                <section class="table-section">
+                    <h3>🛒 Últimas Vendas:</h3>
+                    <div class="table-container">
+                            <table>
+                            <thead>
+                                <tr>
+                                    <th>ID Venda</th>
+                                    <th>Pagamento</th>
+                                    <th>Valor Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="venda : ${ultimasVendas}">
+                                    <td th:text="${venda.id}">1</td>
+                                    <td th:text="${venda.formaPagamento}">Forma</td>
+                                    <td th:text="${'R$ ' + #numbers.formatDecimal(venda.total, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+    <script src="/js/main.js"></script>
+</body>
+</html>

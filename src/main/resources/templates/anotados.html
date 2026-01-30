@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Anotados - Padaria Cachoeiro</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <header class="main-header">
+        <div class="logo-area">
+            <img src="/img/logo-padaria.png" alt="Logo" class="logo-topo">
+            <span class="titulo-padaria">Padaria Cachoeiro</span>
+        </div>
+        <a th:href="@{/}" class="btn btn-danger">Sair</a>
+    </header>
+
+    <div class="app-container">
+        <nav class="sidebar">
+            <ul class="nav-links">
+                <li><a th:href="@{/dashboard}">🏠 Início</a></li>
+                <li><a th:href="@{/produtos}">🍞 Produtos</a></li>
+                <li><a th:href="@{/anotados}" style="font-weight: bold;">💰 Anotados</a></li>
+                <li><a th:href="@{/usuarios}">⚙️ Usuários</a></li>
+                <li><a th:href="@{/clientes}">👥 Clientes</a></li>
+                <li><a th:href="@{/vendas}">🛒 Vender</a></li>
+            </ul>
+        </nav>
+
+        <main class="main-content">
+            <h2 style="margin-bottom: 20px; font-size: 1.8rem;">Anotados</h2>
+            
+            <div class="dashboard-view">
+                <div class="cards-stack">
+                    <div class="dash-card">
+                        <h3>🔍 Localizar Devedor</h3>
+                        <form th:action="@{/anotados/buscar}" method="get" style="position: relative; margin-top: 10px;">
+                            <input type="text" name="nome" class="input-web" placeholder="Nome do cliente..." style="padding-left: 35px;">
+                            <span style="position: absolute; left: 10px; top: 12px;">🔍</span>
+                            <button type="submit" class="btn" style="width: 100%; margin-top: 10px;">Filtrar Lista</button>
+                        </form>
+                    </div>
+
+                    <div class="dash-card">
+                        <h3>Total a Receber:</h3>
+                        <p style="font-size: 1.8rem; color: #c0392b; font-weight: bold;" 
+                           th:text="${'R$ ' + #numbers.formatDecimal(totalGeral, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</p>
+                    </div>
+
+                    <div class="dash-card">
+                        <h3>Clientes Devedores:</h3>
+                        <p style="font-size: 1.8rem;" th:text="${totalDevedores}">0</p>
+                    </div>
+                </div>
+
+                <section class="table-section">
+                    <div class="table-container" style="margin-top: 0;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Cliente</th>
+                                    <th>Data Lançamento</th> <th>Valor Total</th>
+                                    <th>Status</th>
+                                    <th style="text-align: center;">Abater</th>
+                                </tr>
+                            </thead>
+                           <tbody>
+                               <tr th:each="a : ${listaAnotados}">
+                                    <td th:text="${a.nomeCliente}">Nome</td>
+                                    <td th:text="${a.dataLancamento != null ? #temporals.format(a.dataLancamento, 'dd/MM/yyyy') : '--/--/----'}"></td>
+                                    <td th:text="'R$ ' + ${#numbers.formatDecimal(a.valorDevido, 1, 'POINT', 2, 'COMMA')}">0,00</td>
+                                    <td th:text="${a.status}">Status</td>
+                                    <td style="text-align: center;">
+                                        <button class="btn btn-sm btn-success" 
+                                                th:data-id="${a.id}"
+                                                th:data-nome="${a.nomeCliente}"
+                                                th:data-valor="${a.valorDevido}"
+                                                onclick="prepararAbatimento(this)">
+                                            💰 Abater
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <div id="modalAbater" class="modal">
+        <div class="modal-content">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h3>💰 Registrar Pagamento</h3>
+                <button onclick="closeModal('modalAbater')" style="background:none; border:none; font-size: 1.5rem; cursor:pointer;">&times;</button>
+            </div>
+            <hr><br>
+            <form th:action="@{/anotados/abater}" method="POST">
+                <input type="hidden" id="abaterId" name="id">
+                
+                <p>Cliente: <strong id="abaterNome">---</strong></p>
+                <p>Dívida Atual: <strong id="abaterValorAtual" style="color: #c0392b;">R$ 0,00</strong></p>
+                
+                <label style="margin-top: 15px; display: block;">Quanto o cliente está pagando hoje?</label>
+                <input type="number" step="0.01" name="valorPago" class="input-web" placeholder="R$ 0,00" required style="font-size: 1.2rem; height: 45px;">
+
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button type="submit" class="btn btn-success" style="flex: 1; height: 50px;">CONFIRMAR PAGAMENTO</button>
+                    <button type="button" class="btn" onclick="closeModal('modalAbater')" style="flex: 1; height: 50px;">CANCELAR</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script src="/js/main.js"></script>
+</body>
+</html>
